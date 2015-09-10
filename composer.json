@@ -13,9 +13,9 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.3.2",
+        "php": ">=5.4",
         "swiftmailer/swiftmailer": ">=4.3, <6.0",
-        "facebook/php-sdk-v4" : "4.0.*",
+        "facebook/php-sdk-v4" : "~5.0",
         "google/apiclient": "1.1.2",
         "imagine/imagine": "dev-master"
     },
