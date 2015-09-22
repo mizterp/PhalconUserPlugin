@@ -219,6 +219,48 @@ Configuration example with connectors:
 
 ```
 
+
+Configuration example with _optional_ redirect uri (Use **rawurlencode()** on query string)
+
+```php
+
+    'pup' => array(
+        'redirect' => array(
+            'uri' => 'redirect_on_success',//query string field containing the redirect uri (falls back to default redirect->success)
+            'success' => 'user/profile',
+            'failure' => 'user/login'
+        ),
+        'resources' => array(
+            'type' => 'public',
+            'resources' => array(
+                'user' => array('login', 'register')
+            )
+        )
+    )
+
+```
+
+Example of using _optional_ redirect uri:
+```php
+    if(false === $this->auth->isUserSignedIn()){
+        $this->response->redirect('user/login?redirect_on_success='.$this->getRequestURI(true));
+    }
+    
+    //BaseController.php
+    public function getRequestURI($encode=false){
+        $uri_details = $this->request->getQuery();
+        $uri_url = $uri_details['_url'];
+        $uri_params = $uri_details;
+        unset($uri_params['_url']);
+        if(count($uri_params)) $uri_params = http_build_query($uri_params);
+        if($encode){
+            return rawurlencode($uri_url.(!empty($uri_params) ? "?{$uri_params}" : ''));
+        }else{
+            return $uri_url.(!empty($uri_params) ? "?{$uri_params}" : '');
+        }
+    }
+```
+
 ### <a id="example-controller"></a>Example controller
 
 * For a complete controller example read the Wiki page: https://github.com/calinrada/PhalconUserPlugin/wiki/Controller
