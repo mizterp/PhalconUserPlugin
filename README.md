@@ -99,6 +99,9 @@ controller:
 ```php
 
     'pup' => array(
+        'default' => array(
+            'id_group' => 2
+        ),
         'redirect' => array(
             'success' => 'user/profile',
             'failure' => 'user/login'
@@ -120,6 +123,9 @@ In the exampe bellow, the ONLY PUBLIC resurces are the actions LOGIN and REGISTE
 ```php
 
     'pup' => array(
+        'default' => array(
+            'id_group' => 2
+        ),
         'redirect' => array(
             'success' => 'user/profile',
             'failure' => 'user/login'
@@ -140,6 +146,9 @@ controller:
 ```php
 
     'pup' => array(
+        'default' => array(
+            'id_group' => 2
+        ),
         'redirect' => array(
             'success' => 'user/profile',
             'failure' => 'user/login'
@@ -161,6 +170,9 @@ In the exampe bellow, the ONLY PRIVATE resurces are the actions ACCOUNT and PROF
 ```php
 
     'pup' => array(
+        'default' => array(
+            'id_group' => 2
+        ),
         'redirect' => array(
             'success' => 'user/profile',
             'failure' => 'user/login'
@@ -180,6 +192,9 @@ Configuration example with connectors:
 ```php
 
     'pup' => array( // phalcon-user-plugin
+        'default' => array(
+            'id_group' => 2
+        ),
         'redirect' => array(
             'success' => 'user/profile',
             'failure' => 'user/login'
@@ -225,6 +240,9 @@ Configuration example with _optional_ redirect uri (Use **rawurlencode()** on qu
 ```php
 
     'pup' => array(
+        'default' => array(
+            'id_group' => 2
+        ),
         'redirect' => array(
             'uri' => 'redirect_on_success',//query string field containing the redirect uri (falls back to default redirect->success)
             'success' => 'user/profile',
