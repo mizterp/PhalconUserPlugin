@@ -92,7 +92,8 @@ class Security extends Plugin
             $auth->loginWithRememberMe(false);
         }
 
-        $config = $dispatcher->getDI()->get('config');
+        $di = $dispatcher->getDI();
+        $config = $di->get('config');
         $pupConfig = $this->getConfigStructure($config);
 
         if ($auth->isUserSignedIn()) {
@@ -100,7 +101,9 @@ class Security extends Plugin
             $controllerName = $dispatcher->getControllerName();
 
             if ($controllerName == 'user' && $actionName == 'login') {
-                return $this->response->redirect($config->pup->redirect->success)->send();
+                $redirect_uri = $dispatcher->getDI()->get('auth')->getRedirectURI(true);
+
+                return $this->response->redirect($redirect_uri)->send();
             }
         }
 
@@ -113,7 +116,9 @@ class Security extends Plugin
 
                 $this->view->disable();
 
-                return $this->response->redirect($config->pup->redirect->failure)->send();
+                $redirect_uri = $dispatcher->getDI()->get('auth')->getRedirectURI(false);
+
+                return $this->response->redirect($redirect_uri)->send();
             }
         }
 

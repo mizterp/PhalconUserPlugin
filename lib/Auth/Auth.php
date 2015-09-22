@@ -95,9 +95,7 @@ class Auth extends Component
                     'remember' => $this->request->getPost('remember'),
                 ));
 
-                $pupRedirect = $this->getDI()->get('config')->pup->redirect;
-
-                return $this->response->redirect($pupRedirect->success);
+                return $this->response->redirect($this->getRedirectURI(true));
             }
         }
 
@@ -138,15 +136,15 @@ class Auth extends Component
      */
     protected function authenticateOrCreateFacebookUser($facebookUser)
     {
-        $pupRedirect = $this->di->get('config')->pup->redirect;
+        $di = $this->getDI();
         $email = isset($facebookUser['email']) ? $facebookUser['email'] : "{$facebookUser['id']}@facebook.com";
-        $user = User::findFirst(" email='$email' OR facebook_id='".$facebookUser['id']."' ");
+        $user = User::findFirst(" email='$email' OR id_facebook='".$facebookUser['id']."' ");
 
         if ($user) {
             $this->checkUserFlags($user);
             $this->setIdentity($user);
-            if (!$user->getFacebookId()) {
-                $user->setFacebookId($facebookUser['id']);
+            if (!$user->getIdFacebook()) {
+                $user->setIdFacebook($facebookUser['id']);
                 $user->setFacebookName($facebookUser['name']);
                 $user->setFacebookData(serialize($facebookUser));
                 $user->update();
@@ -154,15 +152,16 @@ class Auth extends Component
 
             $this->saveSuccessLogin($user);
 
-            return $this->response->redirect($pupRedirect->success);
+            return $this->response->redirect($this->getRedirectURI(true));
         } else {
             $password = $this->generatePassword();
 
             $user = $this->newUser()
                 ->setName($facebookUser['name'])
                 ->setEmail($email)
+                ->setSignupEmail($email)
                 ->setPassword($di->get('security')->hash($password))
-                ->setFacebookId($facebookUser['id'])
+                ->setIdFacebook($facebookUser['id'])
                 ->setFacebookName($facebookUser['name'])
                 ->setFacebookData(serialize($facebookUser));
 
@@ -211,33 +210,34 @@ class Auth extends Component
 
     protected function authenticateOrCreateLinkedInUser($email, $info)
     {
-        $pupRedirect = $di->get('config')->pup->redirect;
+        $di = $this->getDI();
 
         preg_match('#id=\d+#', $info['siteStandardProfileRequest']['url'], $matches);
 
         $linkedInId = str_replace('id=', '', $matches[0]);
-        $user = User::findFirst("email='$email' OR linkedin_id='$linkedInId'");
+        $user = User::findFirst("email='$email' OR id_linkedin='$linkedInId'");
 
         if ($user) {
             $this->checkUserFlags($user);
             $this->setIdentity($user);
             $this->saveSuccessLogin($user);
 
-            if (!$user->getLinkedinId()) {
-                $user->setLinkedinId($linkedInId);
+            if (!$user->getIdLinkedin()) {
+                $user->setIdLinkedin($linkedInId);
                 $user->setLinkedinName($info['firstName'].' '.$info['lastName']);
                 $user->update();
             }
 
-            return $this->response->redirect($pupRedirect->success);
+            return $this->response->redirect($this->getRedirectURI(true));
         } else {
             $password = $this->generatePassword();
 
             $user = $this->newUser()
                 ->setName($info['firstName'].' '.$info['lastName'])
                 ->setEmail($email)
+                ->setSignupEmail($email)
                 ->setPassword($di->get('security')->hash($password))
-                ->setLinkedinId($linkedInId)
+                ->setIdLinkedin($linkedInId)
                 ->setLinkedinName($info['firstName'].' '.$info['lastName'])
                 ->setLinkedinData(json_encode($info));
 
@@ -251,12 +251,11 @@ class Auth extends Component
     public function loginWithTwitter()
     {
         $di = $this->getDI();
-        $pupRedirect = $di->get('config')->pup->redirect;
         $oauth = $this->session->get('twitterOauth');
-        $config = $di->get('config')->pup->connectors->twitter->toArray();
-        $config = array_merge($config, array('token' => $oauth['token'], 'secret' => $oauth['secret']));
+        $config_twitter = $di->get('config')->pup->connectors->twitter->toArray();
+        $config_twitter = array_merge($config_twitter, array('token' => $oauth['token'], 'secret' => $oauth['secret']));
 
-        $twitter = new TwitterConnector($config, $di);
+        $twitter = new TwitterConnector($config_twitter, $di);
         if (!$this->request->get('oauth_token')) {
             return $this->response->redirect($twitter->request_token(), true);
         }
@@ -281,14 +280,14 @@ class Auth extends Component
                 if ($code == 200) {
                     $response = json_decode($twitter->response['response'], true);
                     $twitterId = $response['id'];
-                    $user = User::findFirst("twitter_id='$twitterId'");
+                    $user = User::findFirst("id_twitter='$twitterId'");
 
                     if ($user) {
                         $this->checkUserFlags($user);
                         $this->setIdentity($user);
                         $this->saveSuccessLogin($user);
 
-                        return $this->response->redirect($pupRedirect->success);
+                        return $this->response->redirect($this->getRedirectURI(true));
                     } else {
                         $password = $this->generatePassword();
                         $email = $response['screen_name'].rand(100000, 999999).'@domain.tld'; // Twitter does not prived user's email
@@ -296,8 +295,9 @@ class Auth extends Component
                         $user = $this->newUser()
                             ->setName($response['name'])
                             ->setEmail($email)
+                            ->setSignupEmail($email)
                             ->setPassword($di->get('security')->hash($password))
-                            ->setTwitterId($response['id'])
+                            ->setIdTwitter($response['id'])
                             ->setTwitterName($response['name'])
                             ->setTwitterData(json_encode($response));
 
@@ -317,12 +317,10 @@ class Auth extends Component
     public function loginWithGoogle()
     {
         $di = $this->getDI();
-        $config = $di->get('config')->pup->connectors->google->toArray();
+        $config_google = $di->get('config')->pup->connectors->google->toArray();
+        $config_google['redirect_uri'] = $config_google['redirect_uri'].'user/loginWithGoogle';
 
-        $pupRedirect = $di->get('config')->pup->redirect;
-        $config['redirect_uri'] = $config['redirect_uri'].'user/loginWithGoogle';
-
-        $google = new GoogleConnector($config);
+        $google = new GoogleConnector($config_google);
 
         $response = $google->connect($di);
 
@@ -333,14 +331,14 @@ class Auth extends Component
         $gplusId = $response['userinfo']['id'];
         $email = $response['userinfo']['email'];
         $name = $response['userinfo']['name'];
-        $user = User::findFirst("gplus_id='$gplusId' OR email = '$email'");
+        $user = User::findFirst("id_gplus='$gplusId' OR email = '$email'");
 
         if ($user) {
             $this->checkUserFlags($user);
             $this->setIdentity($user);
 
-            if (!$user->getGplusId()) {
-                $user->setGplusId($gplusId);
+            if (!$user->getIdGplus()) {
+                $user->setIdGplus($gplusId);
                 $user->setGplusName($name);
                 $user->setGplusData(serialize($response['userinfo']));
                 $user->update();
@@ -348,15 +346,16 @@ class Auth extends Component
 
             $this->saveSuccessLogin($user);
 
-            return $this->response->redirect($pupRedirect->success);
+            return $this->response->redirect($this->getRedirectURI(true));
         } else {
             $password = $this->generatePassword();
 
             $user = $this->newUser()
                 ->setName($name)
                 ->setEmail($email)
+                ->setSignupEmail($email)
                 ->setPassword($di->get('security')->hash($password))
-                ->setGplusId($gplusId)
+                ->setIdGplus($gplusId)
                 ->setGplusName($name)
                 ->setGplusData(serialize($response['userinfo']));
 
@@ -371,9 +370,14 @@ class Auth extends Component
      */
     protected function newUser()
     {
+
+        //Get the default group ID from config
+        $di = $this->getDI();
+        $defaultIdGroup = $di->get('config')->pup->default->id_group;
+
         $user = new User();
         $user->setMustChangePassword(0);
-        $user->setGroupId(2);
+        $user->setIdGroup($defaultIdGroup);
         $user->setStatus(User::STATUS_ACTIVE);
 
         $user->profile = new UserProfile();
@@ -392,13 +396,13 @@ class Auth extends Component
             $this->setIdentity($user);
             $this->saveSuccessLogin($user);
 
-            return $this->response->redirect($pupRedirect->success);
+            return $this->response->redirect($this->getRedirectURI(true));
         } else {
             foreach ($user->getMessages() as $message) {
                 $this->flashSession->error($message->getMessage());
             }
 
-            return $this->response->redirect($pupRedirect->failure);
+            return $this->response->redirect($this->getRedirectURI(false));
         }
     }
 
@@ -497,12 +501,15 @@ class Auth extends Component
      */
     public function loginWithRememberMe($redirect = true)
     {
+        $di = $this->getDI();
+        $config = $di->get('config');
+        $pupRedirect = $config->pup->redirect;
+
         $userId = $this->cookies->get('RMU')->getValue();
         $cookieToken = $this->cookies->get('RMT')->getValue();
 
         $user = User::findFirstById($userId);
 
-        $pupRedirect = $this->getDI()->get('config')->pup->redirect;
 
         if ($user) {
             $userAgent = $this->request->getUserAgent();
@@ -521,7 +528,7 @@ class Auth extends Component
                         $this->saveSuccessLogin($user);
 
                         if (true === $redirect) {
-                            return $this->response->redirect($pupRedirect->success);
+                            return $this->response->redirect($this->getRedirectURI(true));
                         }
 
                         return;
@@ -683,5 +690,23 @@ class Auth extends Component
         $chars = 'abcdefghijklmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ123456789#@%_.';
 
         return substr(str_shuffle($chars), 0, $length);
+    }
+
+    /**
+     * Get redirect uri from encoded parameter or use default success/failure
+     * @param bool $isSuccess
+     * @param bool|true $decode
+     * @return string
+     */
+    public function getRedirectURI($isSuccess, $decode=true){
+        $di = $this->getDI();
+        $config = $di->get('config');
+        $pupRedirect = $config->pup->redirect;
+        $rawParamURI = $pupRedirect->uri ? (!empty($this->request->getQuery($pupRedirect->uri)) ? $this->request->getQuery($pupRedirect->uri) : false) : false;
+        if($rawParamURI){
+            return $isSuccess ? ($decode ? rawurldecode($rawParamURI) : $rawParamURI) : $pupRedirect->failure;
+        }else{
+            return $isSuccess ? $pupRedirect->success : $pupRedirect->failure;
+        }
     }
 }

@@ -42,7 +42,7 @@ class UserPermissions extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field group_id.
+     * Method to set the value of field id_group.
      *
      * @param int $group_id
      *
@@ -94,7 +94,7 @@ class UserPermissions extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field group_id.
+     * Returns the value of field id_group.
      *
      * @return int
      */
@@ -130,7 +130,7 @@ class UserPermissions extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-        $this->belongsTo('group_id', 'Phalcon\UserPlugin\Models\User\UserGroups', 'id', array(
+        $this->belongsTo('id_group', 'Phalcon\UserPlugin\Models\User\UserGroups', 'id', array(
             'alias' => 'group',
             'foreignKey' => array(
                 'action' => \Phalcon\Mvc\Model\Relation::ACTION_CASCADE,

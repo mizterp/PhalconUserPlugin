@@ -116,7 +116,7 @@ class UserGroups extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserPermissions', 'group_id', array(
+        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserPermissions', 'id_group', array(
             'alias' => 'permissions',
         ));
     }

@@ -28,34 +28,31 @@ CREATE TABLE IF NOT EXISTS `user` (
   `name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `email` varchar(48) COLLATE utf8_bin NOT NULL,
   `password` varchar(128) COLLATE utf8_bin NOT NULL,
-  `facebook_id` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `id_facebook` varchar(20) COLLATE utf8_bin DEFAULT NULL,
   `facebook_name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `facebook_data` text COLLATE utf8_bin,
-  `linkedin_id` varchar(64) COLLATE utf8_bin DEFAULT NULL,
+  `id_linkedin` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `linkedin_name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `linkedin_data` text COLLATE utf8_bin,
-  `gplus_id` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  `id_gplus` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   `gplus_name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `gplus_data` text COLLATE utf8_bin,
-  `twitter_id` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `id_twitter` varchar(20) COLLATE utf8_bin DEFAULT NULL,
   `twitter_name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `twitter_data` text COLLATE utf8_bin,
   `must_change_password` tinyint(1) DEFAULT NULL,
-  `group_id` tinyint(3) unsigned NOT NULL,
-  `banned` tinyint(1) NOT NULL COMMENT 'Deprecated field. Left behind for backwards compatibility. Use status column instead',
-  `suspended` tinyint(1) NOT NULL COMMENT 'Deprecated field. Left behind for backwards compatibility. Use status column instead',
-  `active` tinyint(1) DEFAULT NULL COMMENT 'Deprecated field. Left behind for backwards compatibility. Use status column instead',
-  `status` tinyint(2) NOT NULL DEFAULT '1',
+  `id_group` tinyint(3) unsigned NOT NULL,
+  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '0=Inactive, 1=Active, 2=Suspended, 3=Banned',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `facebook_id` (`facebook_id`,`facebook_name`),
-  KEY `linkedin_id` (`linkedin_id`,`linkedin_name`),
-  KEY `gplus_id` (`gplus_id`,`gplus_name`,`twitter_id`,`twitter_name`),
+  KEY `id_facebook` (`id_facebook`,`facebook_name`),
+  KEY `id_linkedin` (`id_linkedin`,`linkedin_name`),
+  KEY `id_gplus` (`id_gplus`,`gplus_name`,`id_twitter`,`twitter_name`),
   KEY `name` (`name`),
-  KEY `group_id` (`group_id`),
+  KEY `id_group` (`id_group`),
   KEY `status` (`status`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -145,11 +142,11 @@ CREATE TABLE IF NOT EXISTS `user_password_changes` (
 
 CREATE TABLE IF NOT EXISTS `user_permissions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `group_id` tinyint(3) unsigned NOT NULL,
+  `id_group` tinyint(3) unsigned NOT NULL,
   `resource` varchar(16) COLLATE utf8_bin NOT NULL,
   `action` varchar(16) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `group_id` (`group_id`)
+  KEY `id_group` (`id_group`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=123 ;
 
 -- --------------------------------------------------------
@@ -231,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `user_success_logins` (
 -- Constraints for table `user`
 --
 ALTER TABLE `user`
-  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `user_groups` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`id_group`) REFERENCES `user_groups` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_email_confirmations`
@@ -261,7 +258,7 @@ ALTER TABLE `user_password_changes`
 -- Constraints for table `user_permissions`
 --
 ALTER TABLE `user_permissions`
-  ADD CONSTRAINT `user_permissions_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `user_groups` (`id`) ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_permissions_ibfk_1` FOREIGN KEY (`id_group`) REFERENCES `user_groups` (`id`) ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_profile`

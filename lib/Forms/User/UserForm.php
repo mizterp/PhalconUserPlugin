@@ -25,7 +25,7 @@ class UserForm extends Form
         $this->add($id);
         $this->add(new Text('name'));
         $this->add(new Text('email'));
-        $this->add(new Select('group_id', UserGroups::find('active = 1'), array(
+        $this->add(new Select('id_group', UserGroups::find('active = 1'), array(
             'using' => array('id', 'name'),
             'useEmpty' => true,
             'emptyText' => '...',

@@ -37,7 +37,7 @@ class User extends \Phalcon\Mvc\Model
     /**
      * @var string
      */
-    protected $facebook_id;
+    protected $id_facebook;
 
     /**
      * @var string
@@ -52,7 +52,7 @@ class User extends \Phalcon\Mvc\Model
     /**
      * @var int
      */
-    protected $linkedin_id;
+    protected $id_linkedin;
 
     /**
      * @var string
@@ -67,7 +67,7 @@ class User extends \Phalcon\Mvc\Model
     /**
      * @var string
      */
-    protected $gplus_id;
+    protected $id_gplus;
 
     /**
      * @var string
@@ -82,7 +82,7 @@ class User extends \Phalcon\Mvc\Model
     /**
      * @var string
      */
-    protected $twitter_id;
+    protected $id_twitter;
 
     /**
      * @var string
@@ -102,33 +102,7 @@ class User extends \Phalcon\Mvc\Model
     /**
      * @var int
      */
-    protected $profile_id;
-
-    /**
-     * @var int
-     */
-    protected $group_id;
-
-    /**
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @var int
-     */
-    protected $banned = 0;
-
-    /**
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @var int
-     */
-    protected $suspended = 0;
-
-    /**
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @var int
-     */
-    protected $active = 0;
+    protected $id_group;
 
     /**
      * @var int
@@ -144,6 +118,21 @@ class User extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $updated_at;
+
+    /**
+     * @var string
+     */
+    protected $signup_ip;
+
+    /**
+     * @var string
+     */
+    protected $signup_email;
+
+    /**
+     * @var string
+     */
+    protected $signup_source;
 
     /**
      * Method to set the value of field id.
@@ -202,15 +191,15 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field facebook_id.
+     * Method to set the value of field id_facebook.
      *
-     * @param string $facebook_id
+     * @param string $id_facebook
      *
      * @return $this
      */
-    public function setFacebookId($facebook_id)
+    public function setIdFacebook($id_facebook)
     {
-        $this->facebook_id = $facebook_id;
+        $this->id_facebook = $id_facebook;
 
         return $this;
     }
@@ -244,15 +233,15 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field linkedin_id.
+     * Method to set the value of field id_linkedin.
      *
-     * @param int $linkedin_id
+     * @param int $id_linkedin
      *
      * @return $this
      */
-    public function setLinkedinId($linkedin_id)
+    public function setIdLinkedin($id_linkedin)
     {
-        $this->linkedin_id = $linkedin_id;
+        $this->id_linkedin = $id_linkedin;
 
         return $this;
     }
@@ -286,15 +275,15 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field gplus_id.
+     * Method to set the value of field id_gplus.
      *
-     * @param string $gplus_id
+     * @param string $id_gplus
      *
      * @return $this
      */
-    public function setGplusId($gplus_id)
+    public function setIdGplus($id_gplus)
     {
-        $this->gplus_id = $gplus_id;
+        $this->id_gplus = $id_gplus;
 
         return $this;
     }
@@ -328,15 +317,15 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field twitter_id.
+     * Method to set the value of field id_twitter.
      *
-     * @param string $twitter_id
+     * @param string $id_twitter
      *
      * @return $this
      */
-    public function setTwitterId($twitter_id)
+    public function setIdTwitter($id_twitter)
     {
-        $this->twitter_id = $twitter_id;
+        $this->id_twitter = $id_twitter;
 
         return $this;
     }
@@ -384,77 +373,15 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field profile_id.
+     * Method to set the value of field id_group.
      *
-     * @param int $profile_id
-     *
-     * @return $this
-     */
-    public function setProfileId($profile_id)
-    {
-        $this->profile_id = (int) $profile_id;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field group_id.
-     *
-     * @param int $group_id
+     * @param int $id_group
      *
      * @return $this
      */
-    public function setGroupId($group_id)
+    public function setIdGroup($id_group)
     {
-        $this->group_id = (int) $group_id;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field banned.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @param int $banned
-     *
-     * @return $this
-     */
-    public function setBanned($banned)
-    {
-        $this->banned = (bool) $banned;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field suspended.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @param int $suspended
-     *
-     * @return $this
-     */
-    public function setSuspended($suspended)
-    {
-        $this->suspended = (bool) $suspended;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field active.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @param int $active
-     *
-     * @return $this
-     */
-    public function setActive($active)
-    {
-        $this->active = (bool) $active;
+        $this->id_group = (int) $id_group;
 
         return $this;
     }
@@ -502,6 +429,48 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field signup_ip.
+     *
+     * @param string $signup_ip
+     *
+     * @return $this
+     */
+    public function setSignupIp($signup_ip)
+    {
+        $this->signup_ip = $signup_ip;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field signup_email.
+     *
+     * @param string $signup_email
+     *
+     * @return $this
+     */
+    public function setSignupEmail($signup_email)
+    {
+        $this->signup_email = $signup_email;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field signup_source.
+     *
+     * @param string $signup_source
+     *
+     * @return $this
+     */
+    public function setSignupSource($signup_source)
+    {
+        $this->signup_source = $signup_source;
+
+        return $this;
+    }
+
+    /**
      * Returns the value of field id.
      *
      * @return int
@@ -542,13 +511,13 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field facebook_id.
+     * Returns the value of field id_facebook.
      *
      * @return string
      */
-    public function getFacebookId()
+    public function getIdFacebook()
     {
-        return $this->facebook_id;
+        return $this->id_facebook;
     }
 
     /**
@@ -572,13 +541,13 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field linkedin_id.
+     * Returns the value of field id_linkedin.
      *
      * @return int
      */
-    public function getLinkedinId()
+    public function getIdLinkedin()
     {
-        return $this->linkedin_id;
+        return $this->id_linkedin;
     }
 
     /**
@@ -602,13 +571,13 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field gplus_id.
+     * Returns the value of field id_gplus.
      *
      * @return string
      */
-    public function getGplusId()
+    public function getIdGplus()
     {
-        return $this->gplus_id;
+        return $this->id_gplus;
     }
 
     /**
@@ -632,13 +601,13 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field twitter_id.
+     * Returns the value of field id_twitter.
      *
      * @return string
      */
-    public function getTwitterId()
+    public function getIdTwitter()
     {
-        return $this->twitter_id;
+        return $this->id_twitter;
     }
 
     /**
@@ -672,95 +641,13 @@ class User extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field profile_id.
+     * Returns the value of field id_group.
      *
      * @return int
      */
-    public function getProfileId()
+    public function getIdGroup()
     {
-        return (int) $this->profile_id;
-    }
-
-    /**
-     * Returns the value of field group_id.
-     *
-     * @return int
-     */
-    public function getGroupId()
-    {
-        return (int) $this->group_id;
-    }
-
-    /**
-     * Returns the value of field banned.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @return int
-     */
-    public function getBanned()
-    {
-        return (bool) $this->banned;
-    }
-
-    /**
-     * Returns the value of field suspended.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @return int
-     */
-    public function getSuspended()
-    {
-        return (bool) $this->suspended;
-    }
-
-    /**
-     * Returns the value of field active.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @return int
-     */
-    public function getActive()
-    {
-        return (bool) $this->active;
-    }
-
-    /**
-     * Checks if the user is banned.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @return bool
-     */
-    public function isBanned()
-    {
-        return (bool) $this->banned;
-    }
-
-    /**
-     * Checks if the user is active.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @return bool
-     */
-    public function isActive()
-    {
-        return (bool) $this->active;
-    }
-
-    /**
-     * Checks if the user is suspended.
-     *
-     * @deprecated Left behind for backward compatibility. Use $status column instead
-     *
-     * @return bool
-     */
-    public function isSuspended()
-    {
-        return (bool) $this->suspended;
+        return (int) $this->id_group;
     }
 
     /**
@@ -791,6 +678,36 @@ class User extends \Phalcon\Mvc\Model
     public function getUpdatedAt()
     {
         return $this->updated_at;
+    }
+
+    /**
+     * Returns the value of field signup_ip.
+     *
+     * @return string
+     */
+    public function getSignupIp()
+    {
+        return $this->signup_ip;
+    }
+
+    /**
+     * Returns the value of field signup_email.
+     *
+     * @return string
+     */
+    public function getSignupEmail()
+    {
+        return $this->signup_email;
+    }
+
+    /**
+     * Returns the value of field signup_source.
+     *
+     * @return string
+     */
+    public function getSignupSource()
+    {
+        return $this->signup_source;
     }
 
     /**
@@ -838,7 +755,7 @@ class User extends \Phalcon\Mvc\Model
             ),
         ));
 
-        $this->belongsTo('group_id', 'Phalcon\UserPlugin\Models\User\UserGroups', 'id', array(
+        $this->belongsTo('id_group', 'Phalcon\UserPlugin\Models\User\UserGroups', 'id', array(
             'alias' => 'group',
             'reusable' => true,
         ));

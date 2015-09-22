@@ -32,20 +32,20 @@ CREATE TABLE IF NOT EXISTS user_groups (
 --
 CREATE TABLE IF NOT EXISTS users (
   id                   BIGSERIAL PRIMARY KEY,
-  group_id             SMALLINT REFERENCES user_groups (id),
+  id_group             SMALLINT REFERENCES user_groups (id),
   name                 VARCHAR(64)           DEFAULT NULL,
   email                VARCHAR(48)  NOT NULL,
   password             VARCHAR(128) NOT NULL,
-  facebook_id          VARCHAR(20)           DEFAULT NULL,
+  id_facebook          VARCHAR(20)           DEFAULT NULL,
   facebook_name        VARCHAR(64)           DEFAULT NULL,
   facebook_data        TEXT,
-  linkedin_id          BIGINT                DEFAULT NULL,
+  id_linkedin          BIGINT                DEFAULT NULL,
   linkedin_name        VARCHAR(64)           DEFAULT NULL,
   linkedin_data        TEXT,
-  gplus_id             VARCHAR(100)          DEFAULT NULL,
+  id_gplus             VARCHAR(100)          DEFAULT NULL,
   gplus_name           VARCHAR(64)           DEFAULT NULL,
   gplus_data           TEXT,
-  twitter_id           VARCHAR(20)           DEFAULT NULL,
+  id_twitter           VARCHAR(20)           DEFAULT NULL,
   twitter_name         VARCHAR(64)           DEFAULT NULL,
   twitter_data         TEXT,
   must_change_password BOOLEAN               DEFAULT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS user_password_changes (
 --
 CREATE TABLE IF NOT EXISTS user_permissions (
   id       BIGSERIAL PRIMARY KEY,
-  group_id SMALLINT REFERENCES user_groups (id),
+  id_group SMALLINT REFERENCES user_groups (id),
   resource VARCHAR(16) NOT NULL,
   action   VARCHAR(16) NOT NULL
 ) WITHOUT OIDS;
@@ -200,9 +200,9 @@ DROP INDEX IF EXISTS idx_active;
 DROP INDEX IF EXISTS idx_token;
 
 CREATE INDEX idx_city_country_formatted_address ON locations (city, country, formatted_address);
-CREATE INDEX idx_facebook_id ON users (facebook_id, facebook_name);
-CREATE INDEX idx_linkedin_id ON users (linkedin_id, linkedin_name);
-CREATE INDEX idx_gplus_id ON users (gplus_id, gplus_name, twitter_id, twitter_name);
+CREATE INDEX idx_facebook_id ON users (id_facebook, facebook_name);
+CREATE INDEX idx_linkedin_id ON users (id_linkedin, linkedin_name);
+CREATE INDEX idx_gplus_id ON users (id_gplus, gplus_name, id_twitter, twitter_name);
 CREATE INDEX idx_name ON users (name);
 CREATE INDEX idx_active ON user_groups (active);
 CREATE INDEX idx_token ON user_remember_tokens (token);
