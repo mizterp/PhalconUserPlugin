@@ -62,13 +62,13 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 CREATE TABLE IF NOT EXISTS `user_email_confirmations` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `id_user` bigint(20) unsigned NOT NULL,
   `code` char(32) COLLATE utf8_bin NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
   `confirmed` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=12 ;
 
 -- --------------------------------------------------------
@@ -79,11 +79,11 @@ CREATE TABLE IF NOT EXISTS `user_email_confirmations` (
 
 CREATE TABLE IF NOT EXISTS `user_failed_logins` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `id_user` bigint(20) unsigned DEFAULT NULL,
   `ip_address` char(15) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `attempted` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `usersId` (`user_id`)
+  KEY `usersId` (`id_user`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=37 ;
 
 -- --------------------------------------------------------
@@ -108,14 +108,14 @@ CREATE TABLE IF NOT EXISTS `user_groups` (
 
 CREATE TABLE IF NOT EXISTS `user_notifications` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `id_user` bigint(20) unsigned NOT NULL,
   `object_id` bigint(20) NOT NULL,
   `object_source` varchar(30) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT 'Object source can be a table. For example, articles. Then object_id is the id from article table',
   `content` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `is_seen` tinyint(1) DEFAULT '0',
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -126,12 +126,12 @@ CREATE TABLE IF NOT EXISTS `user_notifications` (
 
 CREATE TABLE IF NOT EXISTS `user_password_changes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `id_user` bigint(20) unsigned NOT NULL,
   `ip_address` char(15) COLLATE utf8_bin NOT NULL,
   `user_agent` varchar(255) COLLATE utf8_bin NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS `user_permissions` (
 
 CREATE TABLE IF NOT EXISTS `user_profile` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `id_user` bigint(20) unsigned NOT NULL,
   `picture` varchar(255) DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
   `gender` tinyint(1) DEFAULT NULL COMMENT '0=male, 1=female',
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
+  KEY `id_user` (`id_user`),
   KEY `home_location_id` (`home_location_id`),
   KEY `current_location_id` (`current_location_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
@@ -179,13 +179,13 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
 
 CREATE TABLE IF NOT EXISTS `user_remember_tokens` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `id_user` bigint(20) unsigned NOT NULL,
   `token` char(32) COLLATE utf8_bin NOT NULL,
   `user_agent` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `created_at` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `token` (`token`),
-  KEY `user_id` (`user_id`)
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
@@ -196,13 +196,13 @@ CREATE TABLE IF NOT EXISTS `user_remember_tokens` (
 
 CREATE TABLE IF NOT EXISTS `user_reset_passwords` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `id_user` bigint(20) unsigned NOT NULL,
   `code` varchar(48) COLLATE utf8_bin NOT NULL,
   `created_at` datetime NOT NULL,
   `modified_at` datetime DEFAULT NULL,
   `reset` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
@@ -213,11 +213,11 @@ CREATE TABLE IF NOT EXISTS `user_reset_passwords` (
 
 CREATE TABLE IF NOT EXISTS `user_success_logins` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `id_user` bigint(20) unsigned NOT NULL,
   `ip_address` char(15) COLLATE utf8_bin NOT NULL,
   `user_agent` varchar(255) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
+  KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=238 ;
 
 --
@@ -234,25 +234,25 @@ ALTER TABLE `user`
 -- Constraints for table `user_email_confirmations`
 --
 ALTER TABLE `user_email_confirmations`
-  ADD CONSTRAINT `user_email_confirmations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_email_confirmations_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_failed_logins`
 --
 ALTER TABLE `user_failed_logins`
-  ADD CONSTRAINT `user_failed_logins_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_failed_logins_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_notifications`
 --
 ALTER TABLE `user_notifications`
-  ADD CONSTRAINT `user_notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_notifications_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_password_changes`
 --
 ALTER TABLE `user_password_changes`
-  ADD CONSTRAINT `user_password_changes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_password_changes_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_permissions`
@@ -265,23 +265,23 @@ ALTER TABLE `user_permissions`
 --
 ALTER TABLE `user_profile`
   ADD CONSTRAINT `user_profile_ibfk_3` FOREIGN KEY (`current_location_id`) REFERENCES `locations` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
-  ADD CONSTRAINT `user_profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `user_profile_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   ADD CONSTRAINT `user_profile_ibfk_2` FOREIGN KEY (`home_location_id`) REFERENCES `locations` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_remember_tokens`
 --
 ALTER TABLE `user_remember_tokens`
-  ADD CONSTRAINT `user_remember_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_remember_tokens_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_reset_passwords`
 --
 ALTER TABLE `user_reset_passwords`
-  ADD CONSTRAINT `user_reset_passwords_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_reset_passwords_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_success_logins`
 --
 ALTER TABLE `user_success_logins`
-  ADD CONSTRAINT `user_success_logins_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  ADD CONSTRAINT `user_success_logins_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;

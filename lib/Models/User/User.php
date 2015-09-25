@@ -740,7 +740,7 @@ class User extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->hasOne('id', 'Phalcon\UserPlugin\Models\User\UserProfile', 'user_id', array(
+        $this->hasOne('id', 'Phalcon\UserPlugin\Models\User\UserProfile', 'id_user', array(
             'alias' => 'profile',
             'reusable' => true,
             'foreignKey' => array(
@@ -748,7 +748,7 @@ class User extends \Phalcon\Mvc\Model
             ),
         ));
 
-        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserSuccessLogins', 'user_id', array(
+        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserSuccessLogins', 'id_user', array(
             'alias' => 'successLogins',
             'foreignKey' => array(
                 'action' => \Phalcon\Mvc\Model\Relation::ACTION_CASCADE,
@@ -760,14 +760,14 @@ class User extends \Phalcon\Mvc\Model
             'reusable' => true,
         ));
 
-        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserPasswordChanges', 'user_id', array(
+        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserPasswordChanges', 'id_user', array(
             'alias' => 'passwordChanges',
             'foreignKey' => array(
                 'action' => \Phalcon\Mvc\Model\Relation::ACTION_CASCADE,
             ),
         ));
 
-        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserResetPasswords', 'user_id', array(
+        $this->hasMany('id', 'Phalcon\UserPlugin\Models\User\UserResetPasswords', 'id_user', array(
             'alias' => 'resetPasswords',
             'foreignKey' => array(
                 'action' => \Phalcon\Mvc\Model\Relation::ACTION_CASCADE,
@@ -829,7 +829,7 @@ class User extends \Phalcon\Mvc\Model
         }
 
         $emailConfirmation = new UserEmailConfirmations();
-        $emailConfirmation->setUserId($this->id);
+        $emailConfirmation->setIdUser($this->id);
 
         if ($emailConfirmation->save()) {
             $this->getDI()->getFlashSession()->notice(

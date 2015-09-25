@@ -414,7 +414,7 @@ class Auth extends Component
     public function saveSuccessLogin($user)
     {
         $successLogin = new UserSuccessLogins();
-        $successLogin->setUserId($user->getId());
+        $successLogin->setIdUser($user->getId());
         $successLogin->setIpAddress($this->request->getClientAddress());
         $successLogin->setUserAgent($this->request->getUserAgent());
 
@@ -428,12 +428,12 @@ class Auth extends Component
      * Implements login throttling
      * Reduces the efectiveness of brute force attacks.
      *
-     * @param int $user_id
+     * @param int $id_user
      */
-    public function registerUserThrottling($user_id)
+    public function registerUserThrottling($id_user)
     {
         $failedLogin = new UserFailedLogins();
-        $failedLogin->setUserId($user_id == null ? new \Phalcon\Db\RawValue('NULL') : $user_id);
+        $failedLogin->setUserId($id_user == null ? new \Phalcon\Db\RawValue('NULL') : $id_user);
         $failedLogin->setIpAddress($this->request->getClientAddress());
         $failedLogin->setAttempted(time());
         $failedLogin->save();
@@ -472,7 +472,7 @@ class Auth extends Component
         $token = md5($user->getEmail().$user->getPassword().$user_agent);
 
         $remember = new UserRememberTokens();
-        $remember->setUserId($user->getId());
+        $remember->setIdUser($user->getId());
         $remember->setToken($token);
         $remember->setUserAgent($user_agent);
         $remember->setCreatedAt(time());
@@ -517,7 +517,7 @@ class Auth extends Component
 
             if ($cookieToken == $token) {
                 $remember = UserRememberTokens::findFirst(array(
-                    'user_id = ?0 AND token = ?1',
+                    'id_user = ?0 AND token = ?1',
                     'bind' => array($user->getId(), $token),
                 ));
 
@@ -633,7 +633,7 @@ class Auth extends Component
         $this->session->remove('auth-identity');
         $this->session->remove('fb_'.$fbAppId.'_code');
         $this->session->remove('fb_'.$fbAppId.'_access_token');
-        $this->session->remove('fb_'.$fbAppId.'_user_id');
+        $this->session->remove('fb_'.$fbAppId.'_id_user');
         $this->session->remove('googleToken');
         $this->session->remove('linkedIn_token');
         $this->session->remove('linkedIn_token_expires_on');

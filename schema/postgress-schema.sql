@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS user_profile (
   id                  BIGSERIAL PRIMARY KEY,
-  user_id             BIGINT REFERENCES users (id),
+  id_user             BIGINT REFERENCES users (id),
   picture             VARCHAR(255)       DEFAULT NULL,
   birth_date          DATE               DEFAULT NULL,
   gender              BOOLEAN            DEFAULT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS user_profile (
 --
 CREATE TABLE IF NOT EXISTS user_email_confirmations (
   id         BIGSERIAL PRIMARY KEY,
-  user_id    BIGINT REFERENCES users (id),
+  id_user    BIGINT REFERENCES users (id),
   code       CHAR(32)  NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP          DEFAULT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS user_email_confirmations (
 --
 CREATE TABLE IF NOT EXISTS user_failed_logins (
   id         BIGSERIAL PRIMARY KEY,
-  user_id    BIGINT REFERENCES users (id),
+  id_user    BIGINT REFERENCES users (id),
   ip_address INET   NOT NULL,
   attempted  BIGINT NOT NULL
 ) WITHOUT OIDS;
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS user_failed_logins (
 --
 CREATE TABLE IF NOT EXISTS user_notifications (
   id            BIGSERIAL PRIMARY KEY,
-  user_id       BIGINT REFERENCES users (id),
+  id_user       BIGINT REFERENCES users (id),
   object_id     BIGINT    NOT NULL,
   object_source VARCHAR(30)        DEFAULT NULL,
   content       TEXT      NOT NULL,
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS user_notifications (
 --
 CREATE TABLE IF NOT EXISTS user_password_changes (
   id         BIGSERIAL PRIMARY KEY,
-  user_id    BIGINT REFERENCES users (id),
+  id_user    BIGINT REFERENCES users (id),
   ip_address INET         NOT NULL,
   user_agent VARCHAR(255) NOT NULL,
   created_at TIMESTAMP    NOT NULL DEFAULT NOW()
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS user_permissions (
 --
 CREATE TABLE IF NOT EXISTS user_profile (
   id                  BIGSERIAL PRIMARY KEY,
-  user_id             BIGINT REFERENCES users (id),
+  id_user             BIGINT REFERENCES users (id),
   picture             VARCHAR(255) DEFAULT NULL,
   birth_date          DATE         DEFAULT NULL,
   gender              BOOLEAN      DEFAULT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS user_profile (
 --
 CREATE TABLE IF NOT EXISTS user_remember_tokens (
   id         BIGSERIAL PRIMARY KEY,
-  user_id    BIGINT REFERENCES users (id),
+  id_user    BIGINT REFERENCES users (id),
   token      CHAR(32) NOT NULL,
   user_agent VARCHAR(255)      DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS user_remember_tokens (
 --
 CREATE TABLE IF NOT EXISTS user_reset_passwords (
   id          BIGSERIAL PRIMARY KEY,
-  user_id     BIGINT REFERENCES users (id),
+  id_user     BIGINT REFERENCES users (id),
   code        VARCHAR(48) NOT NULL,
   reset       BOOLEAN     NOT NULL,
   created_at  TIMESTAMP   NOT NULL DEFAULT NOW(),
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS user_reset_passwords (
 --
 CREATE TABLE IF NOT EXISTS user_success_logins (
   id         BIGSERIAL PRIMARY KEY,
-  user_id    BIGINT REFERENCES users (id),
+  id_user    BIGINT REFERENCES users (id),
   ip_address INET         NOT NULL,
   user_agent VARCHAR(255) NOT NULL,
   created_at TIMESTAMP    NOT NULL DEFAULT NOW()

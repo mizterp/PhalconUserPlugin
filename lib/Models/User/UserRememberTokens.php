@@ -15,7 +15,7 @@ class UserRememberTokens extends \Phalcon\Mvc\Model
     /**
      * @var int
      */
-    protected $user_id;
+    protected $id_user;
 
     /**
      * @var string
@@ -47,15 +47,15 @@ class UserRememberTokens extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field user_id.
+     * Method to set the value of field id_user.
      *
-     * @param int $user_id
+     * @param int $id_user
      *
      * @return $this
      */
-    public function setUserId($user_id)
+    public function setIdUser($id_user)
     {
-        $this->user_id = $user_id;
+        $this->id_user = $id_user;
 
         return $this;
     }
@@ -113,13 +113,13 @@ class UserRememberTokens extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field user_id.
+     * Returns the value of field id_user.
      *
      * @return int
      */
-    public function getUserId()
+    public function getIdUser()
     {
-        return $this->user_id;
+        return $this->id_user;
     }
 
     /**
@@ -159,7 +159,7 @@ class UserRememberTokens extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-        $this->belongsTo('user_id', 'Phalcon\UserPlugin\Models\User\User', 'id', array(
+        $this->belongsTo('id_user', 'Phalcon\UserPlugin\Models\User\User', 'id', array(
             'alias' => 'user',
             'reusable' => true,
         ));

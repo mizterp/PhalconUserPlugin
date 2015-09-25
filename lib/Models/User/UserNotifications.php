@@ -15,12 +15,12 @@ class UserNotifications extends \Phalcon\Mvc\Model
     /**
      * @var int
      */
-    protected $from_user_id;
+    protected $from_id_user;
 
     /**
      * @var int
      */
-    protected $for_user_id;
+    protected $for_id_user;
 
     /**
      * @var int
@@ -62,29 +62,29 @@ class UserNotifications extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field from_user_id.
+     * Method to set the value of field from_id_user.
      *
-     * @param int $from_user_id
+     * @param int $from_id_user
      *
      * @return $this
      */
-    public function setFromUserId($from_user_id)
+    public function setFromUserId($from_id_user)
     {
-        $this->from_user_id = $from_user_id;
+        $this->from_id_user = $from_id_user;
 
         return $this;
     }
 
     /**
-     * Method to set the value of field for_user_id.
+     * Method to set the value of field for_id_user.
      *
-     * @param int $for_user_id
+     * @param int $for_id_user
      *
      * @return $this
      */
-    public function setForUserId($for_user_id)
+    public function setForUserId($for_id_user)
     {
-        $this->for_user_id = $for_user_id;
+        $this->for_id_user = $for_id_user;
 
         return $this;
     }
@@ -170,23 +170,23 @@ class UserNotifications extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field from_user_id.
+     * Returns the value of field from_id_user.
      *
      * @return int
      */
     public function getFromUserId()
     {
-        return $this->from_user_id;
+        return $this->from_id_user;
     }
 
     /**
-     * Returns the value of field for_user_id.
+     * Returns the value of field for_id_user.
      *
      * @return int
      */
     public function getForUserId()
     {
-        return $this->for_user_id;
+        return $this->for_id_user;
     }
 
     /**
@@ -244,12 +244,12 @@ class UserNotifications extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->belongsTo('from_user_id', 'Phalcon\UserPlugin\Models\User\User', 'id', array(
+        $this->belongsTo('from_id_user', 'Phalcon\UserPlugin\Models\User\User', 'id', array(
             'alias' => 'from_user',
             'reusable' => true,
         ));
 
-        $this->belongsTo('for_user_id', 'Phalcon\UserPlugin\Models\User\User', 'id', array(
+        $this->belongsTo('for_id_user', 'Phalcon\UserPlugin\Models\User\User', 'id', array(
             'alias' => 'for_user',
             'reusable' => true,
         ));
