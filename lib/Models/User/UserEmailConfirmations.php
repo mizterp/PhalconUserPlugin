@@ -227,7 +227,7 @@ class UserEmailConfirmations extends \Phalcon\Mvc\Model
                 $this->user->getEmail() => $this->user->getName(),
             ),
             'Please confirm your email',
-            'confirmation',
+            'email_confirm',
             array(
                 'confirmUrl' => '/user/confirmEmail/'.$this->getCode().'/'.$this->user->getEmail(),
             )

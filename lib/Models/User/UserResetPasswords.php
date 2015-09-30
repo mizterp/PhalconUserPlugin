@@ -234,7 +234,7 @@ class UserResetPasswords extends \Phalcon\Mvc\Model
                 $this->user->getEmail() => $this->user->getName() ? $this->user->getName() : 'Customer',
             ),
             'Reset your password',
-            'reset',
+            'password_reset',
             array(
                 'resetUrl' => '/user/resetPassword/'.$this->getCode().'/'.$this->user->getEmail(),
             )
