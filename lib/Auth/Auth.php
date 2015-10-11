@@ -433,7 +433,7 @@ class Auth extends Component
     public function registerUserThrottling($id_user)
     {
         $failedLogin = new UserFailedLogins();
-        $failedLogin->setUserId($id_user == null ? new \Phalcon\Db\RawValue('NULL') : $id_user);
+        $failedLogin->setIdUser($id_user == null ? new \Phalcon\Db\RawValue('NULL') : $id_user);
         $failedLogin->setIpAddress($this->request->getClientAddress());
         $failedLogin->setAttempted(time());
         $failedLogin->save();

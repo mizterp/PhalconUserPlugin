@@ -45,7 +45,7 @@ class UserFailedLogins extends \Phalcon\Mvc\Model
      *
      * @return $this
      */
-    public function setUserId($id_user)
+    public function setIdUser($id_user)
     {
         $this->id_user = $id_user;
 

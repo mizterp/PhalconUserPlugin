@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `twitter_data` text COLLATE utf8_bin,
   `must_change_password` tinyint(1) DEFAULT NULL,
   `id_group` tinyint(3) unsigned NOT NULL,
-  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '0=Inactive, 1=Active, 2=Suspended, 3=Banned',
+  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '0=Inactive, 1=Active, 2=Suspended, 3=Banned',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
