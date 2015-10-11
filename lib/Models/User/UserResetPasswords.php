@@ -229,15 +229,22 @@ class UserResetPasswords extends \Phalcon\Mvc\Model
      */
     public function afterCreate()
     {
-        $this->getDI()->getMail()->send(
+        $di = $this->getDI();
+        $configPupDefault = $di->get('config')->pup->default;
+
+        $email_template = $configPupDefault->passwordResetTemplateID ?: 'password_reset';
+        $email_subject = $configPupDefault->passwordResetSubject ?: 'Reset your password';
+        $params = array(
+            'resetUrl' => ($configPupDefault->passwordResetURL ?: '/user/resetPassword/').$this->getCode().'/'.$this->user->getEmail(),
+        );
+
+        $di->getMail()->send(
             array(
-                $this->user->getEmail() => $this->user->getName() ? $this->user->getName() : 'Customer',
+                $this->user->getEmail() => $this->user->getName() ?: 'Customer',
             ),
-            'Reset your password',
-            'password_reset',
-            array(
-                'resetUrl' => '/user/resetPassword/'.$this->getCode().'/'.$this->user->getEmail(),
-            )
+            $email_subject,
+            $email_template,
+            $params
         );
     }
 
@@ -246,7 +253,7 @@ class UserResetPasswords extends \Phalcon\Mvc\Model
      */
     public function beforeValidationOnUpdate()
     {
-        //Timestamp the confirmaton
+        //Timestamp the confirmation
         $this->updated_at = date('Y-m-d H:i:s');
     }
 }

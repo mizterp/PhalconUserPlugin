@@ -222,15 +222,22 @@ class UserEmailConfirmations extends \Phalcon\Mvc\Model
      */
     public function afterCreate()
     {
-        $this->getDI()->getMail()->send(
+        $di = $this->getDI();
+        $configPupDefault = $di->get('config')->pup->default;
+
+        $email_template = $configPupDefault->emailConfirmTemplateID ?: 'email_confirm';
+        $email_subject = $configPupDefault->emailConfirmSubject ?: 'Please confirm your email';
+        $params = array(
+            'confirmUrl' => ($configPupDefault->emailConfirmURL ?: '/user/confirmEmail/').$this->getCode().'/'.$this->user->getEmail(),
+        );
+
+        $di->getMail()->send(
             array(
                 $this->user->getEmail() => $this->user->getName(),
             ),
-            'Please confirm your email',
-            'email_confirm',
-            array(
-                'confirmUrl' => '/user/confirmEmail/'.$this->getCode().'/'.$this->user->getEmail(),
-            )
+            $email_subject,
+            $email_template,
+            $params
         );
     }
 
