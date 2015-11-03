@@ -24,7 +24,7 @@ class Auth extends Component
      * Checks the user credentials.
      *
      * @param array $credentials
-     *
+     * @throws Exception
      * @return bool
      */
     public function check($credentials)
@@ -44,7 +44,7 @@ class Auth extends Component
         $this->saveSuccessLogin($user);
 
         if (isset($credentials['remember'])) {
-            $this->createRememberEnviroment($user);
+            $this->createRememberEnvironment($user);
         }
 
         $this->setIdentity($user);
@@ -86,7 +86,7 @@ class Auth extends Component
         } else {
             if ($form->isValid($this->request->getPost()) == false) {
                 foreach ($form->getMessages() as $message) {
-                    $this->flashSession->error($message->getMessage());
+                    $this->flash->error($message->getMessage());
                 }
             } else {
                 $this->check(array(
@@ -108,12 +108,14 @@ class Auth extends Component
     public function loginWithFacebook()
     {
         $di = $this->getDI();
+        $fbConfig = $di->get('config')->pup->connectors->facebook;
+
         $facebook = new FacebookConnector($di);
         $facebookUser = $facebook->getUser();
 
         if (!$facebookUser) {
             $scope = [
-                'scope' => 'email,user_birthday,user_location',
+                'scope' => ($fbConfig->scope ?: 'email,user_birthday,user_location'),
             ];
 
             return $this->response->redirect($facebook->getLoginUrl($scope), true);
@@ -133,12 +135,17 @@ class Auth extends Component
      * Authenitcate or create a user with a Facebook account.
      *
      * @param array $facebookUser
+     * @return \Phalcon\Http\Response|\Phalcon\Http\ResponseInterface
+     * @throws Exception
      */
     protected function authenticateOrCreateFacebookUser($facebookUser)
     {
         $di = $this->getDI();
         $email = isset($facebookUser['email']) ? $facebookUser['email'] : "{$facebookUser['id']}@facebook.com";
-        $user = User::findFirst(" email='$email' OR id_facebook='".$facebookUser['id']."' ");
+        $user = User::findFirst(array(
+                                    'email = ?0 OR id_facebook = ?1',
+                                    'bind' => array($email, $facebookUser['id']),
+                                ));
 
         if ($user) {
             $this->checkUserFlags($user);
@@ -160,10 +167,12 @@ class Auth extends Component
                 ->setName($facebookUser['name'])
                 ->setEmail($email)
                 ->setSignupEmail($email)
+                ->setSignupIp($this->request->getClientAddress())
                 ->setPassword($di->get('security')->hash($password))
                 ->setIdFacebook($facebookUser['id'])
                 ->setFacebookName($facebookUser['name'])
-                ->setFacebookData(serialize($facebookUser));
+                ->setFacebookData(serialize($facebookUser))
+                ->setStatus(User::STATUS_ACTIVE);
 
             return $this->createUser($user);
         }
@@ -215,7 +224,10 @@ class Auth extends Component
         preg_match('#id=\d+#', $info['siteStandardProfileRequest']['url'], $matches);
 
         $linkedInId = str_replace('id=', '', $matches[0]);
-        $user = User::findFirst("email='$email' OR id_linkedin='$linkedInId'");
+        $user = User::findFirst(array(
+                                    'email = ?0 OR id_linkedin = ?1',
+                                    'bind' => array($email, $linkedInId),
+                                ));
 
         if ($user) {
             $this->checkUserFlags($user);
@@ -280,7 +292,10 @@ class Auth extends Component
                 if ($code == 200) {
                     $response = json_decode($twitter->response['response'], true);
                     $twitterId = $response['id'];
-                    $user = User::findFirst("id_twitter='$twitterId'");
+                    $user = User::findFirst(array(
+                                                'id_twitter = ?0',
+                                                'bind' => array($twitterId),
+                                            ));
 
                     if ($user) {
                         $this->checkUserFlags($user);
@@ -290,7 +305,7 @@ class Auth extends Component
                         return $this->response->redirect($this->getRedirectURI(true));
                     } else {
                         $password = $this->generatePassword();
-                        $email = $response['screen_name'].rand(100000, 999999).'@domain.tld'; // Twitter does not prived user's email
+                        $email = "{$response['id']}@twitter.com"; // Twitter does not provide user's email
 
                         $user = $this->newUser()
                             ->setName($response['name'])
@@ -301,7 +316,7 @@ class Auth extends Component
                             ->setTwitterName($response['name'])
                             ->setTwitterData(json_encode($response));
 
-                        $this->flashSession->notice('Because Twitter does not provide an email address, we had randomly generated one: '.$email);
+                        $this->flash->notice('Because Twitter does not provide an email address, we had randomly generated one: '.$email);
 
                         return $this->createUser($user);
                     }
@@ -317,8 +332,9 @@ class Auth extends Component
     public function loginWithGoogle()
     {
         $di = $this->getDI();
-        $config_google = $di->get('config')->pup->connectors->google->toArray();
-        $config_google['redirect_uri'] = $config_google['redirect_uri'].'user/loginWithGoogle';
+        $config = $di->get('config');
+        $config_google = $config->pup->connectors->google->toArray();
+        $config_google['redirect_uri'] = $config_google['redirect_uri'] ?: $config->application->publicUrl.'/user/loginWithGoogle';
 
         $google = new GoogleConnector($config_google);
 
@@ -331,7 +347,10 @@ class Auth extends Component
         $gplusId = $response['userinfo']['id'];
         $email = $response['userinfo']['email'];
         $name = $response['userinfo']['name'];
-        $user = User::findFirst("id_gplus='$gplusId' OR email = '$email'");
+        $user = User::findFirst(array(
+                                    'id_gplus = ?0 OR email = ?1',
+                                    'bind' => array($gplusId, $email),
+                                ));
 
         if ($user) {
             $this->checkUserFlags($user);
@@ -354,10 +373,12 @@ class Auth extends Component
                 ->setName($name)
                 ->setEmail($email)
                 ->setSignupEmail($email)
+                ->setSignupIp($this->request->getClientAddress())
                 ->setPassword($di->get('security')->hash($password))
                 ->setIdGplus($gplusId)
                 ->setGplusName($name)
-                ->setGplusData(serialize($response['userinfo']));
+                ->setGplusData(serialize($response['userinfo']))
+                ->setStatus(User::STATUS_ACTIVE);
 
             return $this->createUser($user);
         }
@@ -399,7 +420,7 @@ class Auth extends Component
             return $this->response->redirect($this->getRedirectURI(true));
         } else {
             foreach ($user->getMessages() as $message) {
-                $this->flashSession->error($message->getMessage());
+                $this->flash->error($message->getMessage());
             }
 
             return $this->response->redirect($this->getRedirectURI(false));
@@ -426,7 +447,7 @@ class Auth extends Component
 
     /**
      * Implements login throttling
-     * Reduces the efectiveness of brute force attacks.
+     * Reduces the effectiveness of brute force attacks.
      *
      * @param int $id_user
      */
@@ -466,7 +487,7 @@ class Auth extends Component
      *
      * @param Phalcon\UserPlugin\Models\User\User $user
      */
-    public function createRememberEnviroment($user)
+    public function createRememberEnvironment($user)
     {
         $user_agent = $this->request->getUserAgent();
         $token = md5($user->getEmail().$user->getPassword().$user_agent);

@@ -16,7 +16,7 @@
         "php": ">=5.4",
         "swiftmailer/swiftmailer": ">=4.3, <6.0",
         "facebook/php-sdk-v4" : "~5.0",
-        "google/apiclient": "1.1.2",
+        "google/apiclient": "1.1.6",
         "imagine/imagine": "dev-master"
     },
     "require-dev": {
