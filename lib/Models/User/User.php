@@ -832,7 +832,7 @@ class User extends \Phalcon\Mvc\Model
         $emailConfirmation->setIdUser($this->id);
 
         if ($emailConfirmation->save()) {
-            $this->getDI()->getFlashSession()->notice(
+            $this->flash->notice(
                 'A confirmation mail has been sent to '.$this->email
             );
         }
