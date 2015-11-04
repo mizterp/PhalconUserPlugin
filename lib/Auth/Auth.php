@@ -394,7 +394,7 @@ class Auth extends Component
 
         //Get the default group ID from config
         $di = $this->getDI();
-        $defaultIdGroup = $di->get('config')->pup->default->id_group;
+        $defaultIdGroup = $di->get('config')->pup->default->id_group ?: 2;
 
         $user = new User();
         $user->setMustChangePassword(0);
