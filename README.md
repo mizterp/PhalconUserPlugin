@@ -23,7 +23,7 @@ a production environment.
 - Login / Register with Google account
 - Change password
 - Password recovery by email
-- Protect different areas from your website, where a user must be loged in, in order to have access
+- Protect different areas from your website, where a user must be logged in, in order to have access
 - Protect different actions, based on the ACL list for each user
 - User profile: birth date, birth location, current location, profile picture
 - Locations - save locations using google API - see Wiki for examples
@@ -31,11 +31,13 @@ a production environment.
 
 ### <a id="installation"></a>Installation
 
-The recommended installation is via compososer. Just add the following line to your composer.json:
+The recommended installation is via Composer. Just add the following line to your `composer.json`:
 
 ```json
 {
-    "crada/phalcon-user-plugin": "2.0"
+    "require": {
+        "crada/phalcon-user-plugin": "~2.0"
+    }
 }
 ```
 
@@ -49,41 +51,60 @@ Add the following lines where to your events manager:
 
 ```php
 
-    $security = new \Phalcon\UserPlugin\Plugin\Security($di);
-    $eventsManager->attach('dispatch', $security);
+$security = new \Phalcon\UserPlugin\Plugin\Security($di);
+$eventsManager->attach('dispatch', $security);
 
 ```
 
 Full example code:
 
 ```php
+use Phalcon\UserPlugin\Plugin\Security as SecurityPlugin;
+use Phalcon\Mvc\Dispatcher;
 
-    $di['dispatcher'] = function() use ($di) {
+$di->setShared(
+    'dispatcher',
+    function() use ($di) {
         $eventsManager = $di->getShared('eventsManager');
-        $security = new \Phalcon\UserPlugin\Plugin\Security($di);
+
+        $security = new SecurityPlugin($di);
         $eventsManager->attach('dispatch', $security);
 
         $dispatcher = new Dispatcher();
         $dispatcher->setEventsManager($eventsManager);
-        return $dispatcher;
-    };
 
+        return $dispatcher;
+    }
+);
 ```
 
 Register Auth, Mail and Acl services
 
 ```php
-    $di['auth'] = function(){
-        return new \Phalcon\UserPlugin\Auth\Auth();
-    };
+use Phalcon\UserPlugin\Auth\Auth;
+use Phalcon\UserPlugin\Acl\Acl;
+use Phalcon\UserPlugin\Mail\Mail;
 
-    $di['acl'] = function() {
-        return new \Phalcon\UserPlugin\Acl\Acl();
-    };
+$di->setShared(
+    'auth'
+    function() {
+        return new Auth();
+    }
+);
 
-    $di['mail'] = function() {
-        return new \Phalcon\UserPlugin\Mail\Mail();
-    };
+$di->setShared(
+    'acl'
+    function() {
+        return new Acl();
+    }
+);
+
+$di->setShared(
+    'mail'
+    function() {
+        return new Mail();
+    }
+);
 ```
 
 ### <a id="configuration"></a>Configuration
@@ -93,190 +114,211 @@ you to set up the configuration separately for each module.
 
 #### Configuration examples
 
-In the exampe bellow, you will treat your website as public, EXCEPT the actions ACCOUNT and PROFILE from the USER
+In the example bellow, you will treat your website as public, EXCEPT the actions ACCOUNT and PROFILE from the USER
 controller:
 
 ```php
-
-    'pup' => array(
-        'default' => array(
-            'id_group' => 2
-        ),
-        'redirect' => array(
-            'success' => 'user/profile',
-            'failure' => 'user/login'
-        ),
-        'resources' => array(
-            'type' => 'public',
-            'resources' => array(
-                '*' => array( // All except
-                    'user' => array('account', 'profile')
-                ),
-            )
-         )
-    )
-
+'pup' => [
+    'redirect' => [
+        'success' => 'user/profile',
+        'failure' => 'user/login'    
+    ],
+    'resources' => [
+        'type' => 'public',
+        'resources' => [
+            '*' => [
+                // All except
+                'user' => ['account', 'profile']
+            ]
+        ]
+    ]
+];
 ```
 
-In the exampe bellow, the ONLY PUBLIC resurces are the actions LOGIN and REGISTER from the USER controller:
+In the example bellow, the ONLY PUBLIC resources are the actions LOGIN and REGISTER from the USER controller:
 
 ```php
-
-    'pup' => array(
-        'default' => array(
-            'id_group' => 2
-        ),
-        'redirect' => array(
-            'success' => 'user/profile',
-            'failure' => 'user/login'
-        ),
-        'resources' => array(
-            'type' => 'public',
-            'resources' => array(
-                'user' => array('login', 'register')
-            )
-        )
-    )
-
+'pup' => [
+    'redirect' => [
+        'success' => 'user/profile',
+        'failure' => 'user/login'    
+    ],
+    'resources' => [
+        'type' => 'public',
+        'resources' => [
+            'user' => [
+                'user' => ['login', 'register']
+            ]
+        ]
+    ]
+];
 ```
 
-In the exampe bellow, you will treat your website as private, EXCEPT the actions LOGIN and REGISTER from the USER
+In the example bellow, you will treat your website as private, EXCEPT the actions LOGIN and REGISTER from the USER
 controller:
 
 ```php
-
-    'pup' => array(
-        'default' => array(
-            'id_group' => 2
-        ),
-        'redirect' => array(
-            'success' => 'user/profile',
-            'failure' => 'user/login'
-        ),
-        'resources' => array(
-            'type' => 'private',
-            'resources' => array(
-                '*' => array( // All except
-                    'user' => array('login', 'register')
-                ),
-            )
-         )
-    )
-
+'pup' => [
+    'redirect' => [
+        'success' => 'user/profile',
+        'failure' => 'user/login'    
+    ],
+    'resources' => [
+        'type' => 'private',
+        'resources' => [
+            '*' => [
+                // All except
+                'user' => ['login', 'register']
+            ]
+        ]
+    ]
+];
 ```
 
-In the exampe bellow, the ONLY PRIVATE resurces are the actions ACCOUNT and PROFILE from the USER controller:
+In the example bellow, the ONLY PRIVATE resources are the actions ACCOUNT and PROFILE from the USER controller:
 
 ```php
-
-    'pup' => array(
-        'default' => array(
-            'id_group' => 2
-        ),
-        'redirect' => array(
-            'success' => 'user/profile',
-            'failure' => 'user/login'
-        ),
-        'resources' => array(
-            'type' => 'private',
-            'resources' => array(
-                'user' => array('account', 'profile')
-            )
-        )
-    )
-
+'pup' => [
+    'redirect' => [
+        'success' => 'user/profile',
+        'failure' => 'user/login'    
+    ],
+    'resources' => [
+        'type' => 'private',
+        'resources' => [
+            'user' => [
+                'user' => ['account', 'profile']
+            ]
+        ]
+    ]
+];
 ```
 
 Configuration example with connectors:
 
 ```php
-
-    'pup' => array( // phalcon-user-plugin
-        'default' => array(
-            'id_group' => 2
-        ),
-        'redirect' => array(
-            'success' => 'user/profile',
-            'failure' => 'user/login'
-        ),
-        'resources' => array(
-            'type' => 'public',
-            'resources' => array(
-                '*' => array( // All except
-                    'user' => array('account', 'profile')
-                ),
-            )
-         ),
-         'connectors' => array(
-             'facebook' => array(
-                 'appId' => 'YOUR_FACEBOOK_APP_ID',
-                 'secret' => 'YOUR_FACEBOOK_APP_SECRET'
-             ),
-             'linkedIn' => array(
-                 'api_key' => 'YOUR_LINKED_IN_APP_ID',
-                 'api_secret' => 'YOUR_LINKED_IN_APP_SECRET',
-                 'callback_url' => 'CALLBACK_URL'
-             ),
-             'twitter' => array(
-                 'consumer_key' => 'TWITTER_CONSUMER_KEY',
-                 'consumer_secret' => 'TWITTER_CONSUMER_SECRET',
-                 'user_agent' => 'YOUR_APPLICATION_NAME', // Leave empty if you don't want to set it
-             ),
-             'google' => array(
-                 'application_name' => 'YOUR_APPLICATION_NAME',
-                 'client_id' => 'YOUR_CLIENT_ID',
-                 'client_secret' => 'YOUR_CLIENT_SECRET',
-                 'developer_key' => 'YOUR_DEVELOPER_KEY',
-                 'redirect_uri' => 'YOUR_REDIRECT_URI'
-             ),
-         )
-    )
-
+// phalcon-user-plugin
+'pup' => [
+    'redirect' => [
+        'success' => 'user/profile',
+        'failure' => 'user/login'    
+    ],
+    'resources' => [
+        'type' => 'public',
+        'resources' => [
+            '*' => [
+                // All except
+                'user' => ['account', 'profile']
+            ]
+        ]
+    ],
+    'connectors' => [
+        'facebook' => [
+            'appId' => 'YOUR_FACEBOOK_APP_ID',
+            'secret' => 'YOUR_FACEBOOK_APP_SECRET'
+            'scope' => 'email,user_birthday,user_location'
+            'login_url' => 'YOUR_LOGIN_URL',
+            'fields' => 'id,name,first_name,last_name,email,locale,timezone,gender,birthday',
+        ],
+        'linkedIn' => [
+            'api_key' => 'YOUR_LINKED_IN_APP_ID',
+            'api_secret' => 'YOUR_LINKED_IN_APP_SECRET',
+            'callback_url' => 'CALLBACK_URL'
+        ],
+        'twitter' => [
+            'consumer_key' => 'TWITTER_CONSUMER_KEY',
+            'consumer_secret' => 'TWITTER_CONSUMER_SECRET',
+            // Leave empty if you don't want to set it
+            'user_agent' => 'YOUR_APPLICATION_NAME'
+        ],
+        'google' => [
+            'application_name' => 'YOUR_APPLICATION_NAME',
+            'client_id' => 'YOUR_CLIENT_ID',
+            'client_secret' => 'YOUR_CLIENT_SECRET',
+            'developer_key' => 'YOUR_DEVELOPER_KEY',
+            'redirect_uri' => 'YOUR_REDIRECT_URI'
+        ]
+    ]
+];
 ```
 
 
-Configuration example with _optional_ redirect uri (Use **rawurlencode()** on query string)
+Configuration example with _optional_ default settings
 
 ```php
-
-    'pup' => array(
-        'default' => array(
-            'id_group' => 2
-        ),
-        'redirect' => array(
-            'uri' => 'redirect_on_success',//query string field containing the redirect uri (falls back to default redirect->success)
-            'success' => 'user/profile',
-            'failure' => 'user/login'
-        ),
-        'resources' => array(
-            'type' => 'public',
-            'resources' => array(
-                'user' => array('login', 'register')
-            )
-        )
-    )
-
+'pup' => [
+    'default' => [
+        //New user's default id_group as defined in user_groups
+        'id_group' => 2,
+        
+        //Use Mandrill API (default is swiftmailer)
+        'mailer' => 'mandrill',
+         
+        //Change default email settings 
+        'emailConfirmURL' => '/user/confirmEmail/',
+        'emailConfirmSubject' => 'Please confirm your email',
+        'emailConfirmTemplateID' => 'email_confirm',
+        
+        'passwordResetURL' => '/user/resetPassword/',
+        'passwordResetSubject' => 'Reset your password',
+        'passwordResetTemplateID' => 'password_reset',
+    ],
+    'redirect' => [
+        //query string field containing the redirect uri (falls back to default redirect->success)
+        'uri' => 'redirect_on_success',
+        
+        'success' => 'user/profile',
+        'failure' => 'user/login'
+    ],
+    'resources' => [
+        'type' => 'public',
+        'resources' => [
+            'user' => array('login', 'register')
+        ]
+    ]
+]
 ```
 
-Example of using _optional_ redirect uri:
+Example of adding Mandrill API via composer:
 ```php
-    if(false === $this->auth->isUserSignedIn()){
-        $this->response->redirect('user/login?redirect_on_success='.$this->getRequestURI(true));
-    }
-    
-    //BaseController.php
-    public function getRequestURI($encode=false){
-        $uri_details = $this->request->getQuery();
-        $uri_url = $uri_details['_url'];
-        $uri_params = $uri_details;
-        unset($uri_params['_url']);
-        if(count($uri_params)) $uri_params = http_build_query($uri_params);
-        if($encode){
-            return rawurlencode($uri_url.(!empty($uri_params) ? "?{$uri_params}" : ''));
-        }else{
-            return $uri_url.(!empty($uri_params) ? "?{$uri_params}" : '');
+"repositories": [
+{
+    "type": "package",
+    "package": {
+        "name": "tartan/phalconphp-mandrill",
+        "version": "1.0.0",
+        "source": {
+            "url": "git@bitbucket.org:tartan/phalconphp-mandrill.git",
+            "type": "git",
+            "reference": "b8bd45b"
         }
     }
+}
+],
+"require": {
+"tartan/phalconphp-mandrill": "1.0.0"
+}
+```
+
+Example of using _optional_ config->pup->redirect->uri:
+```php
+if(false === $this->auth->isUserSignedIn()){
+    $this->response->redirect('user/login?redirect_on_success='.$this->getRequestURI(true));
+}
+
+//BaseController.php
+public function getRequestURI($encode=false){
+    $uri_details = $this->request->getQuery();
+    $uri_url = $uri_details['_url'];
+    $uri_params = $uri_details;
+    unset($uri_params['_url']);
+    if(count($uri_params)) $uri_params = http_build_query($uri_params);
+    if($encode){
+        return rawurlencode($uri_url.(!empty($uri_params) ? "?{$uri_params}" : ''));
+    }else{
+        return $uri_url.(!empty($uri_params) ? "?{$uri_params}" : '');
+    }
+}
 ```
 
 ### <a id="example-controller"></a>Example controller
@@ -292,9 +334,8 @@ class UserController extends Controller
      */
     public function loginAction()
     {
-        if(true === $this->auth->isUserSignedIn())
-        {
-            $this->response->redirect(array('action' => 'profile'));
+        if (true === $this->auth->isUserSignedIn()) {
+            $this->response->redirect(['action' => 'profile']);
         }
 
         $form = new LoginForm();
@@ -370,6 +411,7 @@ class UserController extends Controller
         $this->auth->remove();
         return $this->response->redirect('/', true);
     }
+}
 ```
 
 ### <a id="known-issues"></a>Known issues
