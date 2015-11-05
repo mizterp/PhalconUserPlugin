@@ -273,7 +273,7 @@ Configuration example with _optional_ default settings
     'resources' => [
         'type' => 'public',
         'resources' => [
-            'user' => array('login', 'register')
+            'user' => ['login', 'register']
         ]
     ]
 ]
@@ -282,21 +282,13 @@ Configuration example with _optional_ default settings
 Example of adding Mandrill API via composer:
 ```php
 "repositories": [
-{
-    "type": "package",
-    "package": {
-        "name": "tartan/phalconphp-mandrill",
-        "version": "1.0.0",
-        "source": {
-            "url": "git@bitbucket.org:tartan/phalconphp-mandrill.git",
-            "type": "git",
-            "reference": "b8bd45b"
-        }
+    {
+      "type": "vcs",
+      "url": "https://github.com/mizterp/PhalconPhpMandrill"
     }
-}
 ],
 "require": {
-"tartan/phalconphp-mandrill": "1.0.0"
+    "mizterp/phalcon-php-mandrill": "master"
 }
 ```
 
